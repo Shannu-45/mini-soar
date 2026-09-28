@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>MITRE ATT&amp;CK Coverage</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Technique</th><th>Name</th><th>Tactic</th>
+      <th>Description</th><th>Alerts</th><th></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for tid, t in mitre.items() %}
+    <tr>
+      <td>{{ tid }}</td>
+      <td>{{ t.name }}</td>
+      <td>{{ t.tactic }}</td>
+      <td>{{ t.description }}</td>
+      <td>{{ counts.get(tid, 0) }}</td>
+      <td><a href="{{ t.url }}" target="_blank" rel="noopener">Reference</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

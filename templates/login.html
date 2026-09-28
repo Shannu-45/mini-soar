@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card login">
+  <h1>Analyst Login</h1>
+  <form method="POST">
+    <label>Username<input name="username" required autofocus></label>
+    <label>Password<input type="password" name="password" required></label>
+    <button type="submit">Sign in</button>
+  </form>
+  <p class="hint">Default: admin / admin123</p>
+</div>
+{% endblock %}

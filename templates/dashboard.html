@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Dashboard</h1>
+
+<div class="grid">
+  <div class="card"><canvas id="verdictChart"></canvas></div>
+  <div class="card"><canvas id="ruleChart"></canvas></div>
+  <div class="card"><canvas id="ipChart"></canvas></div>
+</div>
+
+<script>
+fetch('/api/stats').then(function (r) { return r.json(); }).then(function (d) {
+  new Chart(document.getElementById('verdictChart'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(d.verdicts),
+      datasets: [{
+        data: Object.values(d.verdicts),
+        backgroundColor: ['#22c55e', '#eab308', '#f97316', '#ef4444']
+      }]
+    },
+    options: { plugins: { title: { display: true, text: 'Verdict Distribution' } } }
+  });
+
+  new Chart(document.getElementById('ruleChart'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(d.rules),
+      datasets: [{ label: 'Alerts', data: Object.values(d.rules), backgroundColor: '#3b82f6' }]
+    },
+    options: { plugins: { title: { display: true, text: 'Detection Rule Frequency' } } }
+  });
+
+  new Chart(document.getElementById('ipChart'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(d.ips),
+      datasets: [{ label: 'Alerts', data: Object.values(d.ips), backgroundColor: '#8b5cf6' }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { title: { display: true, text: 'Top Source IPs' } }
+    }
+  });
+});
+</script>
+{% endblock %}

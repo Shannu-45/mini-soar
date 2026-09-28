@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Alert #{{ alert.id }} &mdash; {{ alert.rule_name }}</h1>
+
+<div class="grid">
+  <div class="card">
+    <h3>Detection</h3>
+    <p><b>MITRE:</b>
+      <a href="{{ mitre.url }}" target="_blank" rel="noopener">
+        {{ alert.mitre_technique }} &mdash; {{ mitre.name }}
+      </a>
+    </p>
+    <p><b>Tactic:</b> {{ mitre.tactic }}</p>
+    <p><b>Description:</b> {{ mitre.description }}</p>
+    <p><b>Base score:</b> {{ alert.base_score }}</p>
+    <p><b>Risk score:</b>
+      <span class="risk r{{ alert.verdict|lower }}">{{ alert.risk_score }}</span>
+      ({{ alert.verdict }})
+    </p>
+    <p><b>Recommended action:</b> {{ alert.recommended_action }}</p>
+  </div>
+
+  <div class="card">
+    <h3>Event</h3>
+    <p><b>Time:</b> {{ alert.event.timestamp }}</p>
+    <p><b>Event ID:</b> {{ alert.event.event_id }} ({{ alert.event.event_type }})</p>
+    <p><b>Source IP:</b> {{ alert.event.source_ip }}</p>
+    <p><b>User:</b> {{ alert.event.username }}</p>
+    <p><b>Host:</b> {{ alert.event.hostname }}</p>
+    {% if alert.event.file_hash %}<p><b>File hash:</b> {{ alert.event.file_hash }}</p>{% endif %}
+    <p><b>Raw:</b> <code>{{ alert.event.raw }}</code></p>
+  </div>
+
+  <div class="card">
+    <h3>Threat Intelligence</h3>
+    <ul>
+      <li>Source: {{ enrichment.source }}</li>
+      <li>AbuseIPDB Score: {{ enrichment.abuse_score }}</li>
+      <li>VirusTotal IP (malicious / suspicious):
+          {{ enrichment.vt_malicious }} / {{ enrichment.vt_suspicious }}</li>
+      {% if enrichment.vt_file_malicious is defined %}
+      <li>VirusTotal File (malicious / suspicious):
+          {{ enrichment.vt_file_malicious }} / {{ enrichment.vt_file_suspicious }}</li>
+      {% endif %}
+      <li>Country: {{ enrichment.country }} ({{ enrichment.country_code }})</li>
+      <li>City: {{ enrichment.city }}</li>
+      <li>ISP: {{ enrichment.isp }}</li>
+      {% if enrichment.shodan_ports %}
+      <li>Open ports: {{ enrichment.shodan_ports|join(', ') }}</li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
+
+{% if alert.status == 'open' %}
+<form method="POST" action="{{ url_for('feedback', alert_id=alert.id) }}" class="feedback">
+  <button name="feedback" value="true_positive">Mark True Positive</button>
+  <button name="feedback" value="false_positive">Mark False Positive</button>
+</form>
+{% else %}
+<p><b>Closed as:</b> {{ alert.feedback }}</p>
+{% endif %}
+{% endblock %}
